@@ -1,1 +1,98 @@
+import tkinter as tk
+from tkinter import messagebox
+
+def calculate_gpa(average_grade):
+    """Convert average grade to GPA."""
+    if average_grade >= 90:
+        return 4.0
+    elif average_grade >= 80:
+        return 3.0
+    elif average_grade >= 70:
+        return 2.0
+    elif average_grade >= 60:
+        return 1.0
+    else:
+        return 0.0
+
+def get_letter_grade(average_grade):
+    """Convert average grade to letter grade."""
+    if average_grade >= 90:
+        return 'A'
+    elif average_grade >= 80:
+        return 'B'
+    elif average_grade >= 70:
+        return 'C'
+    elif average_grade >= 60:
+        return 'D'
+    else:
+        return 'F'
+
+def calculate_grades(num_subjects_entry, grades_entries, result_label):
+    try:
+        num_subjects = int(num_subjects_entry.get())
+        if num_subjects <= 0:
+            raise ValueError("Number of subjects must be positive.")
+        
+        grades = []
+        for entry in grades_entries:
+            grade = float(entry.get())
+            if not (0 <= grade <= 100):
+                raise ValueError("Grades must be between 0 and 100.")
+            grades.append(grade)
+        
+        average_grade = sum(grades) / num_subjects
+        letter_grade = get_letter_grade(average_grade)
+        gpa = calculate_gpa(average_grade)
+
+        result_label.config(text=f"Average Grade: {average_grade:.2f}\n"
+                                 f"Letter Grade: {letter_grade}\n"
+                                 f"GPA: {gpa:.2f}")
+
+    except ValueError as e:
+        messagebox.showerror("Input Error", str(e))
+
+def create_grade_entries(num_subjects_entry, result_label):
+    try:
+        num_subjects = int(num_subjects_entry.get())
+        if num_subjects <= 0:
+            raise ValueError("Number of subjects must be positive.")
+        
+        for widget in num_subjects_entry.master.winfo_children():
+            if widget not in [num_subjects_entry, result_label]:
+                widget.destroy()
+
+        tk.Label(num_subjects_entry.master, text="Enter the grades for each subject/assignment:").pack()
+
+        grades_entries = []
+
+        for i in range(num_subjects):
+            tk.Label(num_subjects_entry.master, text=f"Grade for subject/assignment {i + 1}:").pack()
+            entry = tk.Entry(num_subjects_entry.master)
+            entry.pack()
+            grades_entries.append(entry)
+
+        tk.Button(num_subjects_entry.master, text="Calculate", 
+                  command=lambda: calculate_grades(num_subjects_entry, grades_entries, result_label)).pack()
+        result_label.pack()
+
+    except ValueError as e:
+        messagebox.showerror("Input Error", str(e))
+
+def setup_ui():
+    window = tk.Tk()
+    window.title("Student Grade Tracker")
+
+    tk.Label(window, text="Enter the number of subjects or assignments:").pack()
+    num_subjects_entry = tk.Entry(window)
+    num_subjects_entry.pack()
+
+    result_label = tk.Label(window, text="")
+    result_label.pack()
+
+    tk.Button(window, text="Submit", command=lambda: create_grade_entries(num_subjects_entry, result_label)).pack()
+
+    window.mainloop()
+
+if __name__ == "__main__":
+    setup_ui()
 
